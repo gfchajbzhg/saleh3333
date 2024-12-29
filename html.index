@@ -1,0 +1,345 @@
+Note: <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Crypto Trading Bot Dashboard</title>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        /* Resetting some default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(90deg, #2980b9, #3498db);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        header h1 {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        nav ul {
+            list-style-type: none;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            background-color: #1abc9c;
+        }
+
+        /* Main section */
+        main {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Section Header */
+        h2 {
+            font-size: 30px;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* Dashboard Stats */
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .stat-item {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 30%;
+            text-align: center;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-item h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #2980b9;
+            font-weight: 500;
+        }
+
+        .stat-item p {
+            font-size: 20px;
+            color: #34495e;
+            font-weight: 700;
+        }
+
+        /* Trading Type Selection */
+        .trade-option {
+            cursor: pointer;
+            display: inline-block;
+            margin-right: 20px;
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .trade-option:hover {
+            background-color: #1abc9c;
+        }
+
+        /* Strategy Control & Time Control */
+        .strategy-control, .time-control {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .strategy-control select, .time-control select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border 0.3s ease;
+        }
+
+        .strategy-control select:hover, .time-control select:hover {
+            border-color: #2980b9;
+        }
+
+        .time-control {
+            margin-top: 30px;
+        }
+
+        .tradingview-widget-container {
+            position: relative;
+            height: 500px;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        table th,
+        table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #e1e1e1;
+        }
+
+        /* Form Styling */
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #3498db;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1abc9c;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #2980b9;
+            color: white;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Crypto Trading Bot</h1>
+            <nav>
+                <ul>
+                    <li><a href="#dashboard">Dashboard</a></li>
+                    <li><a href="#settings">Settings</a></li>
+                    <li><a href="#history">Trade History</a></li>
+                    <li><a href="#backtest">Backtest</a></li>
+                    <li><a href="#logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="dashboard">
+            <h2>Dashboard</h2>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h3>Balance</h3>
+                    <p id="balance">$5000</p>
+                </div>
+                <div class="stat-item">
+                    <h3>Active Trades</h3>
+                    <p id="activeTrades">2</p>
+                </div>
+                <div class="stat-item">
+                    <h3>Trade History</h3>
+                    <p><a href="#history">View History</a></p>
+                </div>
+            </div>
+
+            <!-- Trading Type Selection -->
+            <div>
+                <h3>Select Trading Type:</h3>
+                <div id="tradeOptions">
+                    <span class="trade-option" onclick="selectTradeType('spot')">Spot Trading</span>
+                    <span class="trade-option" onclick="selectTradeType('futures')">Futures Trading</span>
+                </div>
+            </div>
+
+            <div id="tradeTypeInfo">
+                <!-- Info will be dynamically displayed here based on the selected trading type -->
+            </div>
+
+            <!-- Strategy Control Section -->
+            <div class="strategy-control">
+                <h3>Choose Strategy:</h3>
+                <select id="strategySelector" onchange="applyStrategy(this.value)">
+                    <option value="RSI">RSI Strategy</option>
+                    <option value="MovingAverage">Moving Average Strategy</option>
+                    <option value="MACD">MACD Strategy</option>
+                    <option value="Custom">Custom Strategy</option>
+                </select>
+                <p id="strategyInfo">Currently using: RSI Strategy</p>
+            </div>
+
+            <!-- Time Control Section -->
+            <div class="time-control">
+                <h3>Select Trading Interval:</h3>
+                <select id="timeInterval" onchange="setTradingInterval(this.value)">
+                    <option value="5000">5 seconds</option>
+                    <option value="60000">1 minute</option>
+                    <option value="120000">2 minutes</option>
+                    <option value="180000">3 minutes</option>
+                    <option value="300000">5 minutes</option>
+                    <option value="600000">10 minutes</option>
+                    <option value="900000">15 minutes</option>
+                    <option value="1200000">20 minutes</option>
+                    <option value="1500000">25 minutes</option>
+                    <option value="1800000">30 minutes</option>
+                    <option value="2700000">45 minutes</option>
+                    <option value="3600000">1 hour</option>
+                </select>
+                <p id="timeInfo">Currently trading every 5 seconds</p>
+            </div>
+
+            <!-- TradingView Chart Widget -->
+            <div class="chart-container">
+                <h3>Live Market Chart</h3>
+                <div class="tradingview-widget-container"> 
